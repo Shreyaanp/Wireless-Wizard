@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include <MPU6050.h>
 
-MPU6050 mpu; //Declaração do módulo.
+MPU6050 mpu;
 
 int16_t ax, ay, az, gx, gy, gz;
 void setup() {
