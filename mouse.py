@@ -16,7 +16,7 @@ try:
       print(data)                     # Calculating the difference between the current Y value and the previous Y value
       if(len(data)==4):
         if (data[0] == "DATAL" ):
-          mouse.move(int(int(data[2])/1.5),int(int(data[1])/1.5))
+          mouse.move(int(int(data[2])/1.6),int(int(data[1])/1.5))
                      # Checking if the identifier is "DATAL" which the Arduino sends the data as the gyro X, Y and Z values
                 # Moving the mouse by using the X and Y values after converting them into integer
       if(len(data)==2):
@@ -28,6 +28,11 @@ try:
               if data[1] == 'R' :                       # If the Right button is pressed
                       mouse.press(Button.right)         # The corresponding button is pressed and released
                       mouse.release(Button.right)
+      #limit the loop to 10 times per second
+      #limit the mouse position to alittle less than screen size
+      if mouse.position[0] > 1200 and mouse.position[1] > 720 :
+        mouse.position = (1200, mouse.position[1])
+        mouse.position = (mouse.position[0], 720)
 
 except Exception as e:
   print(e)

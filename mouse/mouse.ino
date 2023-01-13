@@ -5,11 +5,15 @@
 #define RightB    2
 #define MouseB    6
 
-MPU6050 mpu6050(Wire);
+MPU6050 mpu6050(Wire); 
+
 int X,Y,Z;               // Data Variables for mouse co-ordinates
 int xinit=0;
 int yinit = 0;
-int Z_gyroX,Z_gyroY,Z_gyroZ;                                                 // Angle Variables for calucating gyroscope zero error
+int Z_gyroX,Z_gyroY,Z_gyroZ;     
+int lastState = LOW;      // the previous state from the input pin
+int currentState;// Angle Variables for calucating gyroscope zero error
+const int SENSOR_PIN = 3;
 
 void setup() {
 
@@ -27,8 +31,9 @@ void setup() {
   pinMode(LeftB,INPUT);
   pinMode(RightB,INPUT);
   pinMode(MouseB,INPUT);
+  pinMode(SENSOR_PIN, INPUT);
   digitalWrite(RightB, LOW);
-   digitalWrite(LeftB, LOW);
+  digitalWrite(LeftB, LOW);
 
   if(Z_gyroX < 0){                                                 // Inverting the sign of all the three offset values for zero error correction
     Z_gyroX = Z_gyroX *(-1);}
@@ -38,7 +43,7 @@ void setup() {
   if(Z_gyroY < 0){
     Z_gyroY = (Z_gyroY *(-1));}
   else{
-    Z_gyroY = ((Z_gyroY-Z_gyroY)-Z_gyroY)+10;}
+    Z_gyroY = ((Z_gyroY-Z_gyroY)-Z_gyroY)+8;}
 
   if(Z_gyroZ < 0){
     Z_gyroZ = Z_gyroZ *(-1);}
@@ -52,7 +57,7 @@ void loop() {
   Y = Z_gyroY + mpu6050.getAngleY();
   Z = Z_gyroZ + mpu6050.getAngleZ();
   digitalWrite(MouseB,HIGH);
-
+  currentState = digitalRead(SENSOR_PIN);
   if(digitalRead(MouseB) == HIGH ){
     delay(5);  // Mouse movement resolution delay
     if(X==xinit && Y==yinit){
@@ -65,10 +70,19 @@ void loop() {
   }
   xinit= X;
   yinit = Y;
-  if(digitalRead(LeftB) == HIGH){                        
-    Serial.println("DATAB,L");
+  if(lastState == LOW && currentState == HIGH){
+    Serial.println("The sensor is touched");
+    
   }
-  if(digitalRead(RightB) == HIGH){                                                  // Debounce delay
-    Serial.println("DATAB,R");                                      // Sends "L" stating the left button is pressed with the identifier "DATAB"
+  else{
+    if(digitalRead(LeftB) == HIGH){
+      Serial.println("DATAB,L");
+      digitalWrite(LeftB, LOW);
+   }
+   if(digitalRead(RightB) == HIGH){                                                  // Debounce delay
+    Serial.println("DATAB,R");
+    digitalWrite(LeftB, LOW);// Sends "L" stating the left button is pressed with the identifier "DATAB"
   }
+  }
+  
 }
