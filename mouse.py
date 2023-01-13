@@ -1,4 +1,5 @@
 import serial
+import time
 from serial import Serial
 from pynput.mouse import Button, Controller
 
@@ -19,7 +20,8 @@ try:
                      # Checking if the identifier is "DATAL" which the Arduino sends the data as the gyro X, Y and Z values
                 # Moving the mouse by using the X and Y values after converting them into integer
       if(len(data)==2):
-        if data[0] == "DATAB":                          # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
+        if data[0] == "DATAB":
+              time.sleep(1)                         # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
               if data[1] == 'L' :                       # If the Left button is pressed
                 mouse.press(Button.left)                # The corresponding button is pressed and released
                 mouse.release(Button.left)
