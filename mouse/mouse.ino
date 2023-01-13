@@ -2,11 +2,13 @@
 #include <Wire.h>
 
 #define LeftB     5
-#define RightB    4
+#define RightB    2
 #define MouseB    6
 
 MPU6050 mpu6050(Wire);
-int X,Y,Z;                                                    // Data Variables for mouse co-ordinates
+int X,Y,Z;               // Data Variables for mouse co-ordinates
+int xinit=0;
+int yinit = 0;
 int Z_gyroX,Z_gyroY,Z_gyroZ;                                                 // Angle Variables for calucating gyroscope zero error
 
 void setup() {
@@ -14,16 +16,19 @@ void setup() {
   Serial.begin(9600);
   Wire.begin();
   mpu6050.begin();
-  Serial.println("STRTM");
   mpu6050.calcGyroOffsets(true);
   mpu6050.update();
   Z_gyroX = mpu6050.getAngleX();
   Z_gyroY = mpu6050.getAngleY();
   Z_gyroZ = mpu6050.getAngleZ();
+ 
+
 
   pinMode(LeftB,INPUT);
   pinMode(RightB,INPUT);
   pinMode(MouseB,INPUT);
+  digitalWrite(RightB, LOW);
+   digitalWrite(LeftB, LOW);
 
   if(Z_gyroX < 0){                                                 // Inverting the sign of all the three offset values for zero error correction
     Z_gyroX = Z_gyroX *(-1);}
@@ -47,16 +52,29 @@ void loop() {
   Y = Z_gyroY + mpu6050.getAngleY();
   Z = Z_gyroZ + mpu6050.getAngleZ();
   digitalWrite(MouseB,HIGH);
+  
   if(digitalRead(MouseB) == HIGH ){
-    delay(5);                                                       // Mouse movement resolution delay
-    Serial.println("DATAL,"+String(X)+','+String(Y)+','+String(Z)); // Sends corrected gyro data to the Serial Port with the identifier "DATAL"
-  }
+    delay(5);  // Mouse movement resolution delay
+    if(X==xinit && Y==yinit){
+      Serial.println("DATAL,"+String(0)+','+String(0)+','+String(0));
+    }
+    else{
+      Serial.println("DATAL,"+String(X)+','+String(Y)+','+String(Z));
+    }
+     // Sends corrected gyro data to the Serial Port with the identifier "DATAL"
+  } 
+  xinit= X;
+  yinit = Y;
   /*if(digitalRead(LeftB) == HIGH){
     delay(100);                                                     // Debounce delay
     Serial.println("DATAB,L");                                      // Sends "L" stating the left button is pressed with the identifier "DATAB"
+  }*/
+  if(digitalRead(LeftB) == HIGH){
+    delay(100);                                                     // Debounce delay
+    Serial.println("DATAB,L");  
   }
   if(digitalRead(RightB) == HIGH){
     delay(100);                                                     // Debounce delay
     Serial.println("DATAB,R");                                      // Sends "L" stating the left button is pressed with the identifier "DATAB"
-  }*/
+  }
 }
