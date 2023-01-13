@@ -21,7 +21,7 @@ try:
                 # Moving the mouse by using the X and Y values after converting them into integer
       if(len(data)==2):
         if data[0] == "DATAB":
-              time.sleep(1)                         # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
+                                  # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
               if data[1] == 'L' :                       # If the Left button is pressed
                 mouse.press(Button.left)                # The corresponding button is pressed and released
                 mouse.release(Button.left)
