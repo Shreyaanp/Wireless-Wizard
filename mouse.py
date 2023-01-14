@@ -97,19 +97,19 @@ def game():
 
   # Start the game loop
   while running:
-      # Handle events
+
       for event in pygame.event.get():
           if event.type == pygame.QUIT:
               running = False
           elif event.type == pygame.MOUSEBUTTONDOWN:
-              # Check if the cursor is within the dot
+
               if (cursor_pos[0]-dot_pos[0])*2 + (cursor_pos[1]-dot_pos[1])**2 < 50*2:
-                  # Generate a new random dot position
+
                   dot_pos = [random.randint(0,700), random.randint(0,500)]
-      # Get the mouse position
+
       cursor_pos = pygame.mouse.get_pos()
 
-      # Clear the screen
+
       screen.fill(bg_color)
 
       # Draw the cursor at the updated position
@@ -164,19 +164,28 @@ def Mouse():
                 Thread(target=game).start()
                 Thread(target=defmouse).start()
 
-                      # Checking if the identifier is "DATAL" which the Arduino sends the data as the gyro X, Y and Z values
-                  # Moving the mouse by usinwhielg the X and Y values after converting them into integer
+
         if(len(data)==2):
-          if data[0] == "DATAB":                   # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
-                if data[1] == 'L' :                       # If the Left button is pressed
-                  mouse.press(but.left)                # The corresponding button is pressed and released
+          if data[0] == "DATAB":
+                if data[1] == 'L' :
+                  mouse.press(but.left)
                   mouse.release(but.left)
-                if data[1] == 'R' :                       # If the Right button is pressed
-                        mouse.press(but.right)         # The corresponding button is pressed and released
+                  count1=0
+                  while (len(data)==2 and count1<=5):
+                    count1+=1
+
+                    dump = ser.readline()
+
+                    dump = str(dump)
+                    dump = dump[2:-5]
+                    data = dump.split(',')
+
+                if data[1] == 'R' :
+                        mouse.press(but.right)
                         mouse.release(but.right)
 
 
-        #limit the mouse position to alittle less than screen size
+
 
   except Exception as e:
     print(e)
