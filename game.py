@@ -22,6 +22,14 @@ def mouse():
         if(len(data)==5):
             if (data[0] == "DATAL" ):
                 mouse.move(int(int(data[2])/1.6),int(int(data[1])/1.5))
+        if(len(data)==2):
+          if data[0] == "DATAB":                   # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
+                if data[1] == 'L' :                       # If the Left button is pressed
+                  mouse.press(but.left)                # The corresponding button is pressed and released
+                  mouse.release(but.left)
+                if data[1] == 'R' :                       # If the Right button is pressed
+                        mouse.press(but.right)         # The corresponding button is pressed and released
+                        mouse.release(but.right)
 # Initialize Pygame
 def game():
 

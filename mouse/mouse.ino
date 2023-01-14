@@ -55,12 +55,12 @@ void setup() {
 }
 
 void loop() {
- 
   mpu6050.update();
   X = Z_gyroX + mpu6050.getAngleX();
   Y = Z_gyroY + mpu6050.getAngleY();
   Z = Z_gyroZ + mpu6050.getAngleZ();
   long duration, inches, cm;  
+  delay(100);
    pinMode(pingPin, OUTPUT);
    digitalWrite(pingPin, LOW);
    delayMicroseconds(2);
