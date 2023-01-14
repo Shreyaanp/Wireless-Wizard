@@ -3,23 +3,26 @@
 
 #define LeftB     5
 #define RightB    2
-#define MouseB    6
+#define MouseB    13
 
-MPU6050 mpu6050(Wire); 
+MPU6050 mpu6050(Wire);
 
-int X,Y,Z;               // Data Variables for mouse co-ordinates
+int X,Y,Z,state;               // Data Variables for mouse co-ordinates
 int xinit=0;
 int yinit = 0;
-int Z_gyroX,Z_gyroY,Z_gyroZ;     
+int Z_gyroX,Z_gyroY,Z_gyroZ;
 int lastState = LOW;      // the previous state from the input pin
 int currentState;// Angle Variables for calucating gyroscope zero error
 const int SENSOR_PIN = 3;
+const int pingPin = 9; // Trigger Pin of Ultrasonic Sensor
+const int echoPin = 8; // Echo Pin of Ultrasonic Sensor
 
 void setup() {
-
-  Serial.begin(9600);
+  
+  Serial.begin(115200);
   Wire.begin();
   mpu6050.begin();
+  digitalWrite(8,HIGH);
   mpu6050.calcGyroOffsets(true);
   mpu6050.update();
   Z_gyroX = mpu6050.getAngleX();
@@ -35,7 +38,7 @@ void setup() {
   digitalWrite(RightB, LOW);
   digitalWrite(LeftB, LOW);
 
-  if(Z_gyroX < 0){                                                 // Inverting the sign of all the three offset values for zero error correction
+  if(Z_gyroX < 0){                                             
     Z_gyroX = Z_gyroX *(-1);}
   else{
     Z_gyroX = (Z_gyroX-Z_gyroX)-Z_gyroX;}
@@ -52,37 +55,52 @@ void setup() {
 }
 
 void loop() {
+ 
   mpu6050.update();
-  X = Z_gyroX + mpu6050.getAngleX();                                     // Getting current angle for X Y Z and correcting the zero error
+  X = Z_gyroX + mpu6050.getAngleX();
   Y = Z_gyroY + mpu6050.getAngleY();
   Z = Z_gyroZ + mpu6050.getAngleZ();
+  long duration, inches, cm;  
+   pinMode(pingPin, OUTPUT);
+   digitalWrite(pingPin, LOW);
+   delayMicroseconds(2);
+   digitalWrite(pingPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(pingPin, LOW);
+   pinMode(echoPin, INPUT);
+   duration = pulseIn(echoPin, HIGH);
+   cm = microsecondsToCentimeters(duration);
   digitalWrite(MouseB,HIGH);
   currentState = digitalRead(SENSOR_PIN);
   if(digitalRead(MouseB) == HIGH ){
-    delay(5);  // Mouse movement resolution delay
+    delay(5);
     if(X==xinit && Y==yinit){
-      Serial.println("DATAL,"+String(0)+','+String(0)+','+String(0));
+      Serial.println("DATAL,"+String(0)+','+String(0)+','+String(0)+','+String(cm));
     }
     else{
-      Serial.println("DATAL,"+String(X)+','+String(Y)+','+String(Z));
+      Serial.println("DATAL,"+String(X)+','+(Y)+','+String(Z)+','+String(cm));
     }
-     // Sends corrected gyro data to the Serial Port with the identifier "DATAL"
   }
   xinit= X;
   yinit = Y;
+
   if(lastState == LOW && currentState == HIGH){
-    Serial.println("The sensor is touched");
-    
+
   }
   else{
+ 
     if(digitalRead(LeftB) == HIGH){
       Serial.println("DATAB,L");
       digitalWrite(LeftB, LOW);
    }
    if(digitalRead(RightB) == HIGH){                                                  // Debounce delay
     Serial.println("DATAB,R");
-    digitalWrite(LeftB, LOW);// Sends "L" stating the left button is pressed with the identifier "DATAB"
+    digitalWrite(LeftB, LOW);
+    }
   }
-  }
-  
+
+}
+
+long microsecondsToCentimeters(long microseconds) {
+   return microseconds / 29 / 2;
 }
