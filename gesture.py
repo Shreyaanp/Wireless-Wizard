@@ -11,6 +11,7 @@ def menu():
 
 
   myFont = font.Font(size=10)
+ # make window geometry into a circle
 
   window.geometry("1200x1200")
 
@@ -76,7 +77,7 @@ def mouse():
         print(data)                     # Calculating the difference between the current Y value and the previous Y value
         if(len(data)==5):
             if (data[0] == "DATAL" ):
-                mouse.move(int(int(data[2])/1.6),int(int(data[1])/1.5))
+                mouse.move(int(int(data[2])),int(int(data[1])))
         if(len(data)==2):
           if data[0] == "DATAB":                   # Checking if the identifier is "DATAB" which the Arduino sends the values for Left/Right button
                 if data[1] == 'L' :                       # If the Left button is pressed

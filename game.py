@@ -19,7 +19,7 @@ def mouse():
         # print("hello")
                 # Spliting up the data to individual items in a list. the first item being the data identifier
         print(data)                     # Calculating the difference between the current Y value and the previous Y value
-        if(len(data)==5):
+        if(len(data)==4):
             if (data[0] == "DATAL" ):
                 mouse.move(int(int(data[2])/1.6),int(int(data[1])/1.5))
         if(len(data)==2):
